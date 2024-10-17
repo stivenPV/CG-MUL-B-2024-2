@@ -1,0 +1,153 @@
+class Linea {
+    constructor(x1, y1, x2, y2) {
+        this.x1 = x1;
+        this.y1 = y1;
+        this.x2 = x2;
+        this.y2 = y2;
+    }
+
+    dibujar(contexto) {
+        contexto.beginPath();
+        contexto.moveTo(this.x1, this.y1);
+        contexto.lineTo(this.x2, this.y2);
+        contexto.stroke();
+    }
+}
+
+class Cuadrado {
+    constructor(x, y, size) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+    }
+
+    dibujar(contexto) {
+        contexto.fillRect(this.x, this.y, this.size, this.size);
+    }
+}
+
+class Cubo {
+    constructor(x, y, size) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+    }
+
+    dibujar_perspectiva(contexto, desplazamiento) {
+        // Dibuja líneas para la proyección perspectiva
+        const h = this.size / 2;
+        const offsetX = this.size * desplazamiento;
+
+        const vertices = [
+            [this.x, this.y],
+            [this.x + this.size, this.y],
+            [this.x + this.size - offsetX, this.y - h],
+            [this.x - offsetX, this.y - h],
+            [this.x, this.y + this.size],
+            [this.x + this.size, this.y + this.size],
+            [this.x + this.size - offsetX, this.y + this.size - h],
+            [this.x - offsetX, this.y + this.size - h]
+        ];
+
+        const lineas = [
+            [vertices[0], vertices[1]],
+            [vertices[1], vertices[2]],
+            [vertices[2], vertices[3]],
+            [vertices[3], vertices[0]],
+            [vertices[4], vertices[5]],
+            [vertices[5], vertices[6]],
+            [vertices[6], vertices[7]],
+            [vertices[7], vertices[4]],
+            [vertices[0], vertices[4]],
+            [vertices[1], vertices[5]],
+            [vertices[2], vertices[6]],
+            [vertices[3], vertices[7]],
+        ];
+
+        lineas.forEach(linea => {
+            new Linea(linea[0][0], linea[0][1], linea[1][0], linea[1][1]).dibujar(contexto);
+        });
+    }
+
+    dibujar_ortografica(contexto) {
+        // Dibuja un cubo en proyección ortográfica
+        contexto.fillStyle = 'rgba(150, 150, 150, 0.5)';
+        const h = this.size;
+
+        const vertices = [
+            [this.x, this.y],
+            [this.x + h, this.y],
+            [this.x + h, this.y + h],
+            [this.x, this.y + h],
+            [this.x, this.y - h],
+            [this.x + h, this.y - h],
+            [this.x + h, this.y + h - h],
+            [this.x, this.y + h - h]
+        ];
+
+        const lineas = [
+            [vertices[0], vertices[1]],
+            [vertices[1], vertices[2]],
+            [vertices[2], vertices[3]],
+            [vertices[3], vertices[0]],
+            [vertices[4], vertices[5]],
+            [vertices[5], vertices[6]],
+            [vertices[6], vertices[7]],
+            [vertices[7], vertices[4]],
+            [vertices[0], vertices[4]],
+            [vertices[1], vertices[5]],
+            [vertices[2], vertices[6]],
+            [vertices[3], vertices[7]],
+        ];
+
+        lineas.forEach(linea => {
+            new Linea(linea[0][0], linea[0][1], linea[1][0], linea[1][1]).dibujar(contexto);
+        });
+    }
+
+    dibujar_isometrica(contexto) {
+        // Dibuja un cubo en proyección isométrica
+        const h = this.size;
+        const vertices = [
+            [this.x, this.y],
+            [this.x + h, this.y],
+            [this.x + h / 2, this.y - h / 2],
+            [this.x - h / 2, this.y - h / 2],
+            [this.x, this.y + h],
+            [this.x + h, this.y + h],
+            [this.x + h / 2, this.y + h / 2 - h],
+            [this.x - h / 2, this.y + h / 2 - h]
+        ];
+
+        const lineas = [
+            [vertices[0], vertices[1]],
+            [vertices[1], vertices[2]],
+            [vertices[2], vertices[3]],
+            [vertices[3], vertices[0]],
+            [vertices[4], vertices[5]],
+            [vertices[5], vertices[6]],
+            [vertices[6], vertices[7]],
+            [vertices[7], vertices[4]],
+            [vertices[0], vertices[4]],
+            [vertices[1], vertices[5]],
+            [vertices[2], vertices[6]],
+            [vertices[3], vertices[7]],
+        ];
+
+        lineas.forEach(linea => {
+            new Linea(linea[0][0], linea[0][1], linea[1][0], linea[1][1]).dibujar(contexto);
+        });
+    }
+}
+
+// Inicialización del canvas y el cubo
+const canvas = document.getElementById('canvas');
+const contexto = canvas.getContext('2d');
+
+const cubo = new Cubo(100, 100, 50);
+contexto.clearRect(0, 0, canvas.width, canvas.height);
+
+// Dibujar las diferentes proyecciones
+cubo.dibujar_perspectiva(contexto, 30);
+cubo.dibujar_ortografica(contexto);
+cubo.dibujar_isometrica(contexto);
